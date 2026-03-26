@@ -1,6 +1,5 @@
 title = "Josh Burgess"
 base_url = "https://joshburgess.github.io/blog"
-description = "Thoughts on programming, type systems, and software engineering"
 
 [[taxonomies]]
 name = "tags"
