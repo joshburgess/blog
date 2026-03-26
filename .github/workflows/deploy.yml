@@ -19,23 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/
-            ~/.cargo/git/
-            target/
-          key: ${{ runner.os }}-cargo-mythic-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-mythic-
-
       - name: Install Mythic
-        run: cargo install --git https://github.com/joshburgess/mythic.git mythic-cli
+        run: |
+          gh release download mythic-v0.1.0 -p mythic -R joshburgess/blog
+          chmod +x mythic
+          sudo mv mythic /usr/local/bin/
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Build site
         run: mythic build
