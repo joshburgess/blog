@@ -527,21 +527,17 @@ body {
   letter-spacing: var(--heading-tracking);
 }
 
-.site-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .site-title a { color: var(--text); text-decoration: none; }
 .site-title a:hover { color: var(--accent); }
 
 .home-link {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  vertical-align: middle;
   color: var(--text-muted) !important;
-  opacity: 0.6;
+  opacity: 0.5;
   transition: opacity var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out) !important;
+  margin-right: 0.25rem;
 }
 
 .home-link:hover {
