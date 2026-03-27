@@ -20,36 +20,134 @@
     el.setAttribute('data-mode', getMode());
   }
 
-  function sync() {
-    var ps = document.querySelector('.palette-select');
-    var ts = document.querySelector('.typography-select');
-    if (ps) ps.value = get(KEYS.palette);
-    if (ts) ts.value = get(KEYS.typography);
-  }
-
   // Apply immediately to prevent flash
   apply();
 
   document.addEventListener('DOMContentLoaded', function () {
-    sync();
-
     var moonSVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
     var sunSVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+    var chevronSVG = '<svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"/></svg>';
 
+    // --- Custom dropdown builder ---
+    function buildDropdown(nativeSelect, storageKey) {
+      if (!nativeSelect) return null;
+
+      var wrapper = document.createElement('div');
+      wrapper.className = 'custom-dropdown';
+
+      var trigger = document.createElement('button');
+      trigger.className = 'custom-dropdown-trigger';
+      trigger.setAttribute('aria-haspopup', 'listbox');
+      trigger.setAttribute('aria-expanded', 'false');
+
+      var label = document.createElement('span');
+      label.className = 'custom-dropdown-label';
+
+      var chevron = document.createElement('span');
+      chevron.className = 'custom-dropdown-chevron';
+      chevron.innerHTML = chevronSVG;
+
+      trigger.appendChild(label);
+      trigger.appendChild(chevron);
+
+      var menu = document.createElement('div');
+      menu.className = 'custom-dropdown-menu';
+      menu.setAttribute('role', 'listbox');
+
+      var options = Array.from(nativeSelect.options);
+      options.forEach(function (opt) {
+        var item = document.createElement('button');
+        item.className = 'custom-dropdown-item';
+        item.setAttribute('role', 'option');
+        item.setAttribute('data-value', opt.value);
+        item.textContent = opt.textContent;
+        menu.appendChild(item);
+      });
+
+      wrapper.appendChild(trigger);
+      wrapper.appendChild(menu);
+
+      // Replace the native select
+      nativeSelect.parentNode.insertBefore(wrapper, nativeSelect);
+      nativeSelect.style.display = 'none';
+
+      // State
+      var currentValue = get(storageKey);
+
+      function setValue(val) {
+        currentValue = val;
+        localStorage.setItem(storageKey, val);
+        apply();
+        updateDisplay();
+        close();
+      }
+
+      function updateDisplay() {
+        var v = get(storageKey);
+        var opt = options.find(function (o) { return o.value === v; });
+        label.textContent = opt ? opt.textContent : v;
+        menu.querySelectorAll('.custom-dropdown-item').forEach(function (item) {
+          item.classList.toggle('active', item.getAttribute('data-value') === v);
+        });
+      }
+
+      function open() {
+        wrapper.classList.add('open');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+
+      function close() {
+        wrapper.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+
+      function toggle() {
+        if (wrapper.classList.contains('open')) close(); else open();
+      }
+
+      trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        // Close other open dropdowns
+        document.querySelectorAll('.custom-dropdown.open').forEach(function (d) {
+          if (d !== wrapper) d.classList.remove('open');
+        });
+        toggle();
+      });
+
+      menu.addEventListener('click', function (e) {
+        var item = e.target.closest('.custom-dropdown-item');
+        if (!item) return;
+        setValue(item.getAttribute('data-value'));
+      });
+
+      updateDisplay();
+      return { wrapper: wrapper, close: close, updateDisplay: updateDisplay };
+    }
+
+    // Build custom dropdowns
     var ps = document.querySelector('.palette-select');
     var ts = document.querySelector('.typography-select');
+    var paletteDropdown = buildDropdown(ps, KEYS.palette);
+    var typographyDropdown = buildDropdown(ts, KEYS.typography);
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', function () {
+      document.querySelectorAll('.custom-dropdown.open').forEach(function (d) {
+        d.classList.remove('open');
+      });
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.custom-dropdown.open').forEach(function (d) {
+          d.classList.remove('open');
+        });
+      }
+    });
+
+    // Mode toggle
     var mb = document.querySelector('.mode-toggle');
-
-    if (ps) ps.addEventListener('change', function () {
-      localStorage.setItem(KEYS.palette, ps.value);
-      apply();
-    });
-
-    if (ts) ts.addEventListener('change', function () {
-      localStorage.setItem(KEYS.typography, ts.value);
-      apply();
-    });
-
     if (mb) mb.addEventListener('click', function () {
       var current = document.documentElement.getAttribute('data-mode') || 'dark';
       var next = current === 'dark' ? 'light' : 'dark';
@@ -58,7 +156,6 @@
       mb.innerHTML = next === 'dark' ? moonSVG : sunSVG;
     });
 
-    // Set initial icon
     if (mb) mb.innerHTML = getMode() === 'dark' ? moonSVG : sunSVG;
   });
 })();
@@ -74,7 +171,6 @@
       return params.get('tag');
     }
 
-    // Create "Show all" link upfront (hidden by default)
     var heading = document.querySelector('.taxonomy-term-heading');
     var clearLink = null;
     if (heading) {
@@ -105,17 +201,14 @@
         card.style.display = match ? '' : 'none';
       });
 
-      // Update active state on filter tags
       document.querySelectorAll('.project-tag-filter').forEach(function(a) {
         var linkTag = new URLSearchParams(a.search).get('tag');
         a.classList.toggle('tag-active', linkTag === tag);
       });
 
-      // Show/hide clear filter
       if (clearLink) clearLink.style.display = tag ? '' : 'none';
     }
 
-    // Handle click on filter tags
     document.addEventListener('click', function(e) {
       var link = e.target.closest('.project-tag-filter');
       if (!link) return;
@@ -131,7 +224,6 @@
       }
     });
 
-    // Apply filter on page load
     filterProjects(getActiveTag());
   });
 })();
