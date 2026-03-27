@@ -635,6 +635,10 @@ main {
   letter-spacing: var(--heading-tracking);
   line-height: var(--line-height-heading);
   margin-bottom: calc(var(--spacing-sm) * 0.75);
+  background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .article-meta {
@@ -797,10 +801,17 @@ main {
 
 .taxonomy-term-heading {
   font-family: var(--font-display);
-  font-size: var(--font-size-h2);
+  font-size: var(--font-size-h1);
   font-weight: var(--heading-weight);
   font-style: var(--heading-style);
+  letter-spacing: var(--heading-tracking);
+  line-height: var(--line-height-heading);
   margin-bottom: var(--spacing-md);
+  background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: capitalize;
 }
 
 /* ---- 404 ---- */
