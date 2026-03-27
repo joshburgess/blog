@@ -1,29 +1,61 @@
-// Theme toggle
+// Theme system: palette + typography + mode (dark/light)
 (function () {
-  const STORAGE_KEY = 'theme';
-  const DARK = 'dark';
-  const LIGHT = 'light';
+  var KEYS = { palette: 'palette', typography: 'typography', mode: 'mode' };
+  var DEFAULTS = { palette: 'copper', typography: 'technical', mode: 'light' };
 
-  function getPreferred() {
-    var stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return stored;
-    return window.matchMedia('(prefers-color-scheme: light)').matches ? LIGHT : DARK;
+  function get(key) {
+    return localStorage.getItem(key) || DEFAULTS[key];
   }
 
-  function apply(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem(STORAGE_KEY, theme);
+  function getMode() {
+    var stored = localStorage.getItem(KEYS.mode);
+    if (stored) return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function apply() {
+    var el = document.documentElement;
+    el.setAttribute('data-palette', get(KEYS.palette));
+    el.setAttribute('data-typography', get(KEYS.typography));
+    el.setAttribute('data-mode', getMode());
+  }
+
+  function sync() {
+    var ps = document.querySelector('.palette-select');
+    var ts = document.querySelector('.typography-select');
+    if (ps) ps.value = get(KEYS.palette);
+    if (ts) ts.value = get(KEYS.typography);
   }
 
   // Apply immediately to prevent flash
-  apply(getPreferred());
+  apply();
 
   document.addEventListener('DOMContentLoaded', function () {
-    var btn = document.querySelector('.theme-toggle');
-    if (!btn) return;
-    btn.addEventListener('click', function () {
-      var current = document.documentElement.getAttribute('data-theme') || DARK;
-      apply(current === DARK ? LIGHT : DARK);
+    sync();
+
+    var ps = document.querySelector('.palette-select');
+    var ts = document.querySelector('.typography-select');
+    var mb = document.querySelector('.mode-toggle');
+
+    if (ps) ps.addEventListener('change', function () {
+      localStorage.setItem(KEYS.palette, ps.value);
+      apply();
     });
+
+    if (ts) ts.addEventListener('change', function () {
+      localStorage.setItem(KEYS.typography, ts.value);
+      apply();
+    });
+
+    if (mb) mb.addEventListener('click', function () {
+      var current = document.documentElement.getAttribute('data-mode') || 'dark';
+      var next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(KEYS.mode, next);
+      apply();
+      mb.textContent = next === 'dark' ? '\u263D' : '\u2600';
+    });
+
+    // Set initial icon
+    if (mb) mb.textContent = getMode() === 'dark' ? '\u263D' : '\u2600';
   });
 })();
