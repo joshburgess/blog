@@ -910,23 +910,17 @@ main {
 .project-card:nth-child(4) { animation-delay: 440ms; }
 .project-card:nth-child(n+5) { animation-delay: 520ms; }
 
-/* --- Theme switching: smooth all color properties --- */
-body,
-.site-header,
-.site-footer,
-.project-card,
-.tag,
-.prose pre,
-.prose blockquote,
-.prose :not(pre) > code,
-.theme-controls select,
-.mode-toggle,
-.error-page {
+/* --- Theme switching: smooth all color properties on every element --- */
+*,
+*::before,
+*::after {
   transition:
-    background-color var(--duration-normal) var(--ease-in-out),
-    color var(--duration-normal) var(--ease-in-out),
-    border-color var(--duration-normal) var(--ease-in-out),
-    box-shadow var(--duration-normal) var(--ease-in-out);
+    background-color var(--duration-slow) var(--ease-in-out),
+    color var(--duration-slow) var(--ease-in-out),
+    border-color var(--duration-slow) var(--ease-in-out),
+    box-shadow var(--duration-slow) var(--ease-in-out),
+    fill var(--duration-slow) var(--ease-in-out),
+    stroke var(--duration-slow) var(--ease-in-out);
 }
 
 /* --- Hover micro-interactions --- */
