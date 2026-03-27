@@ -18,6 +18,7 @@
             <div class="site-title"><a href="{{ site.base_path }}/">{{ site.title }}</a></div>
             <nav class="site-nav">
                 <a href="{{ site.base_path }}/">Posts</a>
+                <a href="{{ site.base_path }}/projects/">Projects</a>
                 <a href="{{ site.base_path }}/about/">About</a>
                 <a href="{{ site.base_path }}/tags/">Tags</a>
                 <a href="{{ site.base_path }}/feed.xml">RSS</a>
@@ -49,7 +50,29 @@
     </header>
     <main class="container">
         <h1 class="taxonomy-term-heading">{{ page.title }}</h1>
+        {% if data.projects %}
+        {% set matching_projects = [] %}
+        {% for project in data.projects %}
+            {% if project.tags is containing(page.title) %}
+            {% set_global matching_projects = matching_projects | concat(with=project) %}
+            {% endif %}
+        {% endfor %}
+        {% if matching_projects | length > 0 %}
+        <h2 class="section-heading">Projects</h2>
+        <div class="project-list">
+            {% for project in matching_projects %}
+            <div class="project-card">
+                <div class="project-header">
+                    <h3 class="project-name"><a href="{{ project.url }}">{{ project.name }}</a></h3>
+                </div>
+                <p class="project-description">{{ project.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endif %}
         {% if data.paginator %}
+        <h2 class="section-heading">Posts</h2>
         <ul class="post-list">
             {% for p in data.paginator.pages %}
             <li class="post-item">
