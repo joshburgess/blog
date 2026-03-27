@@ -527,8 +527,27 @@ body {
   letter-spacing: var(--heading-tracking);
 }
 
+.site-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .site-title a { color: var(--text); text-decoration: none; }
 .site-title a:hover { color: var(--accent); }
+
+.home-link {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted) !important;
+  opacity: 0.6;
+  transition: opacity var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out) !important;
+}
+
+.home-link:hover {
+  opacity: 1;
+  color: var(--accent) !important;
+}
 
 .site-nav {
   display: flex;
