@@ -57,9 +57,10 @@
             <p>Thoughts on programming, type systems, and software engineering.</p>
         </div>
         <h2 class="section-heading">Recent Posts</h2>
-        {% if data.pages %}
+        {% set all_pages = get_pages() %}
+        {% if all_pages %}
         <ul class="post-list">
-            {% for p in data.pages %}
+            {% for p in all_pages %}
             {% if p.url is containing("/posts/") %}
             <li class="post-item">
                 <span class="post-date">{{ p.date }}</span>
