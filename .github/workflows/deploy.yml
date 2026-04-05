@@ -18,22 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Mythic
-        run: |
-          gh release download mythic-v0.1.0 -p mythic -R joshburgess/blog
-          chmod +x mythic
-          sudo mv mythic /usr/local/bin/
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-      - name: Build site
-        run: mythic build
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: public
+      - uses: joshburgess/mythic/action@main
 
   deploy:
     needs: build
