@@ -1,5 +1,5 @@
 - name: Mythic
-  description: A fast, batteries-included static site generator written in Rust. Parallel markdown rendering, incremental rebuilds, multi-engine templates (Tera, Handlebars), asset pipeline, taxonomy system, and live reload dev server.
+  description: A fast, batteries-included static site generator written in Rust. Parallel markdown rendering, incremental rebuilds, multi-engine templates (Tera, Handlebars, MiniJinja), asset pipeline, taxonomy system, and live reload dev server.
   url: https://github.com/joshburgess/mythic
   tags:
     - rust
