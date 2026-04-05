@@ -224,6 +224,11 @@
       }
     });
 
+    // Re-filter when browser back/forward changes the URL
+    window.addEventListener('popstate', function() {
+      filterProjects(getActiveTag());
+    });
+
     filterProjects(getActiveTag());
   });
 })();
