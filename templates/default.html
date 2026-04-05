@@ -18,6 +18,21 @@
     {% if assets.css_path %}<link rel="stylesheet" href="{{ assets.css_path }}">{% endif %}
     <link rel="canonical" href="{{ site.base_url }}{{ page.url }}">
     <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ site.base_path }}/feed.xml">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": {% if page.tags %}"BlogPosting"{% elif page.date %}"Article"{% else %}"WebPage"{% endif %},
+      "headline": "{{ page.title }}",
+      "url": "{{ site.base_url }}{{ page.url }}"{% if page.date %},
+      "datePublished": "{{ page.date }}"{% endif %}{% if page.tags %},
+      "keywords": "{{ page.tags | join(sep=', ') }}"{% endif %},
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "{{ site.title }}",
+        "url": "{{ site.base_url }}/"
+      }
+    }
+    </script>
     <script>
       (function(){var d=document.documentElement,g=function(k,f){return localStorage.getItem(k)||f};d.setAttribute('data-palette',g('palette','copper'));d.setAttribute('data-typography',g('typography','technical'));var m=localStorage.getItem('mode');if(!m)m=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';d.setAttribute('data-mode',m)})();
     </script>
