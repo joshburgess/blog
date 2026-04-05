@@ -56,9 +56,9 @@
         {% if data.projects %}
         <div class="project-list">
             {% for project in data.projects %}
-            <div class="project-card">
+            <div class="project-card" {% if project.url %}data-url="{{ project.url }}"{% endif %}>
                 <div class="project-header">
-                    <h2 class="project-name"><a href="{{ project.url }}">{{ project.name }}</a></h2>
+                    <h2 class="project-name">{% if project.url %}<a href="{{ project.url }}" target="_blank" rel="noopener">{{ project.name }}</a>{% else %}{{ project.name }}{% endif %}</h2>
                 </div>
                 <p class="project-description">{{ project.description }}</p>
                 {% if project.tags %}

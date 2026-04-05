@@ -880,6 +880,10 @@ main {
   transition: border-color 0.2s;
 }
 
+.project-card[data-url] {
+  cursor: pointer;
+}
+
 .project-card:hover {
   border-color: var(--accent);
 }

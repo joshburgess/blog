@@ -229,6 +229,16 @@
       filterProjects(getActiveTag());
     });
 
+    // Make project cards clickable (navigates to project URL)
+    document.addEventListener('click', function(e) {
+      // Don't navigate if clicking a tag filter link
+      if (e.target.closest('.project-tag-filter')) return;
+      var card = e.target.closest('.project-card[data-url]');
+      if (card) {
+        window.open(card.getAttribute('data-url'), '_blank', 'noopener');
+      }
+    });
+
     filterProjects(getActiveTag());
   });
 })();
