@@ -18,4 +18,4 @@ entries = 20
 
 [highlight]
 theme = "base16-ocean.dark"
-line_numbers = true
+line_numbers = false
