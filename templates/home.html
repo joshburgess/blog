@@ -60,8 +60,8 @@
         {% set all_pages = get_pages() %}
         {% if all_pages %}
         <ul class="post-list">
-            {% for p in all_pages | sort(attribute="date") | reverse %}
-            {% if p.url is containing("/posts/") %}
+            {% for p in all_pages %}
+            {% if p.url is containing("/posts/") and p.date %}
             <li class="post-item">
                 <span class="post-date">{{ p.date }}</span>
                 <span class="post-title"><a href="{{ p.url }}">{{ p.title }}</a></span>
