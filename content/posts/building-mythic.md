@@ -12,7 +12,7 @@ categories:
 
 Every static site generator I've tried has made me feel like I'm giving something up. Hugo is impressively fast, but its Go templates and opinionated structure can be annoying. Eleventy lets you do almost anything, but that freedom costs you on large sites. Builds get slow.
 
-I built [Mythic](https://github.com/joshburgess/mythic) because I greatly prefer Rust to Go, and I wanted to see if I could get both speed and flexibility. It turned out well. 10,000 pages build in 1.6 seconds, incremental rebuilds with no changes finish in 125ms, and it includes things like accessibility auditing, content linting, and Schema.org generation out of the box.
+I built [Mythic](https://github.com/joshburgess/mythic) because I greatly prefer Rust to Go, and I wanted to try to achieve both speed and flexibility. It turned out well. 10,000 pages build in 1.6 seconds, incremental rebuilds with no changes finish in 125ms, and it includes things like accessibility auditing, content linting, and Schema.org generation out of the box.
 
 ## Performance
 
