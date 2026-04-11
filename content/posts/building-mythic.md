@@ -49,7 +49,7 @@ The CPU work is almost free, thanks largely to [rayon](https://github.com/rayon-
 
 The bottleneck is purely filesystem I/O: 10,000 pages means 40,000+ syscalls (mkdir, create, write, and close per page). No amount of CPU optimization can fix that. What actually made the biggest difference was making incremental builds truly incremental. Mythic checks content hashes before rendering, so unchanged pages never reach the render, template, or output stages at all.
 
-I also hit an interesting O(n^2) problem in the template phase. Including a list of all pages in every page's template context meant deep-cloning that list for every render. At 10,000 pages, this alone took over 5 seconds. The fix was registering collections as lazy Tera functions that only materialize when a template actually accesses them. Templates that don't need the page list pay zero cost, and the template phase dropped from 5,200ms to 5ms.
+I also hit an interesting O(n^2) problem in the template phase. Including a list of all pages in every page's template context meant deep-cloning that list for every render. At 10,000 pages, this alone took over 5 seconds. The fix was registering collections as lazy template functions that only materialize when a template actually accesses them. Templates that don't need the page list pay zero cost, and the template phase dropped from 5,200ms to 5ms.
 
 ## Built-In Features Worth Mentioning
 
