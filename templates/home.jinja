@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ page.title }} — {{ site.title }}</title>
+    <title>{{ site.title }}</title>
+    <meta name="description" content="Thoughts on programming, type systems, and software engineering">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fira+Code:wght@400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inconsolata:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Nunito+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Roboto+Mono:wght@400;500&family=Source+Code+Pro:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -51,40 +52,24 @@
         </div>
     </header>
     <main class="container">
-        <h1 class="taxonomy-term-heading">{{ page.title }}</h1>
-        {% if data.projects %}
-        {% set matching_projects = [] %}
-        {% for project in data.projects %}
-            {% if project.tags is containing(page.title) %}
-            {% set_global matching_projects = matching_projects | concat(with=project) %}
-            {% endif %}
-        {% endfor %}
-        {% if matching_projects | length > 0 %}
-        <h2 class="section-heading">Projects</h2>
-        <div class="project-list">
-            {% for project in matching_projects %}
-            <div class="project-card">
-                <div class="project-header">
-                    <h3 class="project-name"><a href="{{ project.url }}">{{ project.name }}</a></h3>
-                </div>
-                <p class="project-description">{{ project.description }}</p>
-            </div>
-            {% endfor %}
+        <div class="hero">
+            <h1>Opining on Tech</h1>
+            <p>Thoughts on programming, type systems, and software engineering.</p>
         </div>
-        {% endif %}
-        {% endif %}
-        {% if data.paginator %}
-        <h2 class="section-heading">Posts</h2>
+        <h2 class="section-heading">Recent Posts</h2>
+        {% set all_pages = get_pages() %}
+        {% if all_pages %}
         <ul class="post-list">
-            {% for p in data.paginator.pages %}
+            {% for p in all_pages %}
+            {% if "/posts/" in p.url and p.date %}
             <li class="post-item">
                 <span class="post-date">{{ p.date }}</span>
                 <span class="post-title"><a href="{{ p.url }}">{{ p.title }}</a></span>
             </li>
+            {% endif %}
             {% endfor %}
         </ul>
         {% endif %}
-        {{ content | safe }}
     </main>
     <footer class="site-footer">
         <div class="container">
@@ -95,3 +80,4 @@
     {% if assets.js_path %}<script src="{{ assets.js_path }}"></script>{% endif %}
 </body>
 </html>
+ 

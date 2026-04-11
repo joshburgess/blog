@@ -3,36 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% if page.title %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
-    <meta name="description" content="{% if page.title %}{{ page.title }} — {{ site.title }}{% else %}Thoughts on programming, type systems, and software engineering{% endif %}">
-    <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="{{ site.base_url }}{{ page.url }}">
-    <meta property="og:site_name" content="{{ site.title }}">
-    <meta property="og:description" content="Thoughts on programming, type systems, and software engineering">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <title>{{ page.title }} — {{ site.title }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fira+Code:wght@400;500&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inconsolata:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Nunito+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Roboto+Mono:wght@400;500&family=Source+Code+Pro:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% if assets.css_path %}<link rel="stylesheet" href="{{ assets.css_path }}">{% endif %}
     <link rel="canonical" href="{{ site.base_url }}{{ page.url }}">
     <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ site.base_path }}/feed.xml">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": {% if page.tags %}"BlogPosting"{% elif page.date %}"Article"{% else %}"WebPage"{% endif %},
-      "headline": "{{ page.title }}",
-      "url": "{{ site.base_url }}{{ page.url }}"{% if page.date %},
-      "datePublished": "{{ page.date }}"{% endif %}{% if page.tags %},
-      "keywords": "{{ page.tags | join(sep=', ') }}"{% endif %},
-      "isPartOf": {
-        "@type": "WebSite",
-        "name": "{{ site.title }}",
-        "url": "{{ site.base_url }}/"
-      }
-    }
-    </script>
     <script>
       (function(){var d=document.documentElement,g=function(k,f){return localStorage.getItem(k)||f};d.setAttribute('data-palette',g('palette','copper'));d.setAttribute('data-typography',g('typography','technical'));var m=localStorage.getItem('mode');if(!m)m=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';d.setAttribute('data-mode',m)})();
     </script>
@@ -74,25 +51,42 @@
         </div>
     </header>
     <main class="container">
-        <article>
-            <div class="article-header">
-                <h1>{{ page.title }}</h1>
-                {% if page.date %}
-                <div class="article-meta">
-                    <time>{{ page.date }}</time>
-                    {% if page.tags %}
-                    <span class="separator">/</span>
-                    <div class="article-tags">
-                        {% for tag in page.tags %}<a href="{{ site.base_path }}/tags/{{ tag }}/" class="tag">{{ tag }}</a>{% endfor %}
-                    </div>
-                    {% endif %}
+        <h1 class="taxonomy-term-heading">{{ page.title }}</h1>
+        {% if data.projects %}
+        {% set ns = namespace(has_match=false) %}
+        {% for project in data.projects %}
+            {% if page.title in project.tags %}
+                {% set ns.has_match = true %}
+            {% endif %}
+        {% endfor %}
+        {% if ns.has_match %}
+        <h2 class="section-heading">Projects</h2>
+        <div class="project-list">
+            {% for project in data.projects %}
+            {% if page.title in project.tags %}
+            <div class="project-card">
+                <div class="project-header">
+                    <h3 class="project-name"><a href="{{ project.url }}">{{ project.name }}</a></h3>
                 </div>
-                {% endif %}
+                <p class="project-description">{{ project.description }}</p>
             </div>
-            <div class="prose">
-                {{ content | safe }}
-            </div>
-        </article>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endif %}
+        {% if data.paginator %}
+        <h2 class="section-heading">Posts</h2>
+        <ul class="post-list">
+            {% for p in data.paginator.pages %}
+            <li class="post-item">
+                <span class="post-date">{{ p.date }}</span>
+                <span class="post-title"><a href="{{ p.url }}">{{ p.title }}</a></span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {{ content | safe }}
     </main>
     <footer class="site-footer">
         <div class="container">
