@@ -28,11 +28,11 @@ On these synthetic benchmarks, Mythic came out ahead of Hugo at every scale I te
 
 ### Incremental Build (No Content Changes)
 
-| SSG      | 1k     | 5k     | 10k     |
-|----------|--------|--------|---------|
-| Mythic   | 10ms   | 58ms   | 125ms   |
-| Hugo     | 171ms  | 851ms  | 2,925ms |
-| Eleventy | ~300ms | ~1,510ms | ~3,860ms |
+| Pages  | Mythic | Hugo    | Eleventy  |
+|--------|--------|---------|-----------|
+| 1,000  | 10ms   | 171ms   | ~300ms    |
+| 5,000  | 58ms   | 851ms   | ~1,510ms  |
+| 10,000 | 125ms  | 2,925ms | ~3,860ms  |
 
 This is the number I care about most. When you're writing, you save a file, switch to the browser, and want to see the result. You do this constantly, and Hugo re-processes everything every time. Mythic skips unchanged content entirely: no re-rendering, no re-templating, and no re-writing.
 
