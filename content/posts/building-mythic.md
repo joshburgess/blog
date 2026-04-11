@@ -162,4 +162,4 @@ mythic serve
 
 Mythic is a 6-crate Rust workspace. The [source](https://github.com/joshburgess/mythic) and [documentation](https://github.com/joshburgess/mythic/tree/main/docs) cover everything from getting started to plugin development to migration from other SSGs. A GitHub Action for deployment is included and works with GitHub Pages, Netlify, Vercel, and Cloudflare Pages.
 
-This blog is built with Mythic. If you're running a large static site and incremental build times matter to you, or if you want accessibility auditing and content linting without bolting on extra tools, give it a try.
+This blog is built with Mythic. If you're running a large static site and incremental build times matter to you, if you want accessibility auditing and content linting without bolting on extra tools, or if you just like Rust and want an SSG written in it, give it a try.
