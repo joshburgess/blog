@@ -10,9 +10,7 @@ categories:
   - projects
 ---
 
-Every static site generator I've tried has made me feel like I'm giving something up. Hugo is impressively fast, but its Go templates and opinionated structure can be annoying. Eleventy lets you do almost anything, but that freedom costs you on large sites. Builds get slow. Of course, there are also powerful, modern options like Astro, Next.js, etc., but they're sort of solving a different problem. For this blog, I specifically wanted a _classic_ static site generator, not a full featured web app framework.
-
-I built [Mythic](https://github.com/joshburgess/mythic) because I greatly prefer Rust to Go, and I wanted to try to achieve both speed and flexibility. It turned out well. 10,000 pages build in 1.6 seconds, incremental rebuilds with no changes finish in 125ms, and it includes things like accessibility auditing, content linting, and Schema.org generation out of the box.
+Every static site generator I've tried has made me feel like I'm giving something up. Hugo is impressively fast, but its Go templates and opinionated structure can be annoying. Eleventy lets you do almost anything, but that flexibility comes at the cost of build speed. Of course, there are also powerful, modern options like Astro, Next.js, etc., but they're sort of solving a different problem. So, I built [Mythic](https://github.com/joshburgess/mythic). I wanted a _classic_ static site generator, I greatly prefer Rust to Go, and I aimed to achieve both speed and flexibility. It turned out well. 10,000 pages build in 1.6 seconds, incremental rebuilds with no changes finish in 125ms, and it includes things like accessibility auditing, content linting, and Schema.org generation out of the box.
 
 ## Performance
 
