@@ -1,5 +1,5 @@
 ---
-title: "Building a Static Site Generator That's Faster Than Hugo"
+title: "Building a Traditional Static Site Generator That's Faster Than Hugo"
 date: "2026-04-05"
 tags:
   - rust
@@ -10,7 +10,7 @@ categories:
   - projects
 ---
 
-Every static site generator I've tried has made me feel like I'm giving something up. Hugo is impressively fast, but its Go templates and opinionated structure can be annoying. Eleventy lets you do almost anything, but that freedom costs you on large sites. Builds get slow.
+Every static site generator I've tried has made me feel like I'm giving something up. Hugo is impressively fast, but its Go templates and opinionated structure can be annoying. Eleventy lets you do almost anything, but that freedom costs you on large sites. Builds get slow. Of course, there are also powerful, modern options like Astro, Next.js, etc., but they're sort of solving a different problem. For this blog, I specifically wanted a _classic_ static site generator, not a full featured web app framework.
 
 I built [Mythic](https://github.com/joshburgess/mythic) because I greatly prefer Rust to Go, and I wanted to try to achieve both speed and flexibility. It turned out well. 10,000 pages build in 1.6 seconds, incremental rebuilds with no changes finish in 125ms, and it includes things like accessibility auditing, content linting, and Schema.org generation out of the box.
 
@@ -53,7 +53,7 @@ The bottleneck is purely filesystem I/O: 10,000 pages means 40,000+ syscalls (mk
 
 I also hit an interesting O(n^2) problem in the template phase. Including a list of all pages in every page's template context meant deep-cloning that list for every render. At 10,000 pages, this alone took over 5 seconds. The fix was registering collections as lazy Tera functions that only materialize when a template actually accesses them. Templates that don't need the page list pay zero cost, and the template phase dropped from 5,200ms to 5ms.
 
-## Things Most SSGs Don't Do
+## Built-In Features Worth Mentioning
 
 ### Three Template Engines
 
