@@ -28,6 +28,8 @@ On these synthetic benchmarks, Mythic came out ahead of Hugo at every scale I te
 
 ### Incremental Build (No Content Changes)
 
+Hugo and Eleventy re-process all pages on every build, so their times are unchanged from above. Mythic's incremental cache skips rendering, templating, and writing for unchanged pages entirely.
+
 | Pages  | Mythic | Hugo    | Eleventy  |
 |--------|--------|---------|-----------|
 | 1,000  | 10ms   | 171ms   | ~300ms    |
