@@ -26,7 +26,7 @@ Here are the numbers from my benchmarks. I left Jekyll out. It's slower than bot
 | 5,000  | 740ms   | 851ms   | 1,510ms  |
 | 10,000 | 1,614ms | 2,925ms | 3,860ms  |
 
-On these synthetic benchmarks, Mythic came out ahead of Hugo at every scale I tested. Real-world results will vary depending on template complexity and content. If performance is a priority, MiniJinja is the best choice of the three engines. Its `Value` type uses reference counting internally, which makes context passing significantly cheaper than Tera's deep-clone approach at scale.
+On these synthetic benchmarks, Mythic came out ahead of Hugo at every scale I tested. Real-world results will vary depending on template complexity and content. Mythic supports three template engines (Tera, Handlebars, and MiniJinja), and if performance is a priority, MiniJinja is the best choice. Its `Value` type uses reference counting internally, which makes context passing significantly cheaper than Tera's deep-clone approach at scale.
 
 ### Incremental Build (No Content Changes)
 
