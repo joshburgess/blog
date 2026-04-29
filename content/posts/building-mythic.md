@@ -24,7 +24,7 @@ Here are the numbers from my benchmarks. I left Jekyll out. It's slower than bot
 | 5,000  | 740ms   | 851ms   | 1,510ms  |
 | 10,000 | 1,614ms | 2,925ms | 3,860ms  |
 
-On these synthetic benchmarks, Mythic came out ahead of Hugo at every scale I tested. Real-world results will vary depending on template complexity and content. Mythic supports three template engines (Tera, Handlebars, and MiniJinja), and if performance is a priority, MiniJinja is the best choice. Its `Value` type uses reference counting internally, which makes context passing significantly cheaper than Tera's deep-clone approach at scale.
+On these synthetic benchmarks, Mythic came out ahead of Hugo at every scale I tested. Real-world results will vary depending on template complexity and content. Mythic supports three template engines (Tera, MiniJinja, and Handlebars), and if performance is a priority, MiniJinja is the best choice. Its `Value` type uses reference counting internally, which makes context passing significantly cheaper than Tera's deep-clone approach at scale.
 
 ### Incremental Build (No Content Changes)
 
@@ -57,7 +57,7 @@ I also hit an interesting O(n^2) problem in the template phase. Including a list
 
 ### Three Template Engines
 
-Mythic supports Tera, Handlebars, and MiniJinja in the same project, detected by file extension. They coexist without configuration, which is handy when migrating from another SSG or working with people who prefer different template syntaxes.
+Mythic supports Tera, MiniJinja, and Handlebars in the same project, detected by file extension. They coexist without configuration, which is handy when migrating from another SSG or working with people who prefer different template syntaxes.
 
 ### Build-Time Accessibility Auditing
 
@@ -143,9 +143,9 @@ For CSS changes, it does hot injection. The stylesheet is swapped without a full
 
 ## Other Interesting Takeaways
 
-Content hashing turned out to be a better caching strategy than dependency tracking. I tried dependency tracking first, rebuilding a page if its template or data files changed. The bookkeeping was complex and fragile. Content hashing is simpler: hash the inputs, compare to the cached hash, and skip if equal. A combined hash of the config and templates handles the "everything changed" case. It's correct by construction, and the hash comparison is essentially free compared to I/O.
+Content hashing turned out to be a better caching strategy than dependency tracking. I tried dependency tracking first, rebuilding a page if its template or data files changed. The bookkeeping was complex and fragile. Content hashing is simpler: hash the inputs, compare to the cached hash, and skip if equal. A combined hash of the config and templates handles the "everything changed" case. There's no bookkeeping to drift out of sync, and the hash comparison is essentially free compared to I/O.
 
-Supporting multiple template engines was also easier than expected. Dispatching on file extension (`.html`/`.tera` -> Tera, `.hbs` -> Handlebars, `.jinja`/`.j2` -> MiniJinja) took maybe 50 lines of code per engine. They share the same template context and filter functions. There's no deep architectural reason other SSGs are single-engine. It's just convention.
+Supporting multiple template engines was also easier than expected. Dispatching on file extension (`.html`/`.tera` -> Tera, `.jinja`/`.j2` -> MiniJinja, `.hbs` -> Handlebars) took maybe 50 lines of code per engine. They share the same template context and filter functions. There's no deep architectural reason other SSGs are single-engine. It's just convention.
 
 ## Getting Started
 
