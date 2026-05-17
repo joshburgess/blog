@@ -1,6 +1,6 @@
 ---
 title: "Building a Traditional Static Site Generator That's Faster Than Hugo"
-date: "2026-04-05"
+date: "2026-05-17"
 tags:
   - rust
   - mythic
@@ -10,11 +10,11 @@ categories:
   - projects
 ---
 
-Every static site generator I've tried has made me feel like I'm giving something up. Hugo is impressively fast, but its Go templates and opinionated structure can be annoying. Eleventy lets you do almost anything, but that flexibility comes at the cost of build speed. Of course, there are also powerful, modern options like Astro, Next.js, etc., but they're sort of solving a different problem. So, I built [Mythic](https://github.com/joshburgess/mythic). I wanted a _classic_ static site generator, I greatly prefer Rust to Go, and I aimed to achieve both speed and flexibility. It turned out well. 10,000 pages build in 1.6 seconds, incremental rebuilds with no changes finish in 125ms, and it includes things like accessibility auditing, content linting, and Schema.org generation out of the box.
+Every static site generator I've tried has made me feel like I'm giving something up. Hugo is fast but its Go templates and opinionated structure get in the way. Eleventy is flexible but slow. Astro and Next.js are great but solve a different problem. So I built [Mythic](https://github.com/joshburgess/mythic), a classic SSG written in Rust. 10,000 pages build in 1.6 seconds and incremental rebuilds finish in 125ms. Accessibility auditing, content linting, and Schema.org generation are built in.
 
 ## Performance
 
-Here are the numbers from my benchmarks. I left Jekyll out. It's slower than both Hugo and Eleventy, and I wanted to compare against the strongest competition.
+Here are the numbers. I left Jekyll out since it's slower than both Hugo and Eleventy and I wanted to compare against the strongest competition.
 
 ### Full Build (Cold)
 
@@ -36,7 +36,7 @@ Hugo and Eleventy re-process all pages on every build. So, their times are the s
 | 5,000  | 58ms   | 851ms   | ~1,510ms  |
 | 10,000 | 125ms  | 2,925ms | ~3,860ms  |
 
-This is the number I care about most. When you're writing, you save a file, switch to the browser, and want to see the result. You do this constantly, and Hugo re-processes everything every time. Mythic skips unchanged content entirely: no re-rendering, no re-templating, and no re-writing.
+This is the number I care about most. When you're writing, you save a file, switch to the browser, and want to see the result instantly. You do this constantly, and Hugo re-processes everything every time. Mythic skips unchanged pages entirely.
 
 ### Why It's Fast
 
@@ -47,9 +47,9 @@ I profiled the 10,000-page build to understand where time was actually being spe
 - **Template application**: 5ms (<1%)
 - **File output I/O**: 1,348ms (83%)
 
-The CPU work is almost free, thanks largely to [rayon](https://github.com/rayon-rs/rayon), a data-parallelism library for Rust. Rayon makes it easy to turn sequential iterators into parallel ones. A single `.par_iter()` call distributes markdown rendering across all available cores. The same approach parallelizes template application and file output. This is a huge performance win for very little effort.
+The CPU work is almost free, thanks largely to [rayon](https://github.com/rayon-rs/rayon). A single `.par_iter()` call distributes markdown rendering across all available cores, and the same approach handles template application and file output.
 
-The bottleneck is purely filesystem I/O: 10,000 pages means 40,000+ syscalls (mkdir, create, write, and close per page). No amount of CPU optimization can fix that. What actually made the biggest difference was making incremental builds truly incremental. Mythic checks content hashes before rendering, so unchanged pages never reach the render, template, or output stages at all.
+The bottleneck is filesystem I/O: 10,000 pages means 40,000+ syscalls (mkdir, create, write, and close per page). CPU optimization can't fix that. The real win came from making incremental builds skip work entirely. Mythic checks content hashes before rendering, so unchanged pages never reach the render, template, or output stages.
 
 I also hit an interesting O(n^2) problem in the template phase. Including a list of all pages in every page's template context meant deep-cloning that list for every render. At 10,000 pages, this alone took over 5 seconds. The fix was registering collections as lazy template functions that only materialize when a template actually accesses them. Templates that don't need the page list pay zero cost, and the template phase dropped from 5,200ms to 5ms.
 
@@ -69,7 +69,7 @@ Every build runs WCAG checks:
 - Form inputs without labels
 - Empty links
 
-These show up as warnings in the build output, so you catch problems early instead of finding out later from a Lighthouse audit or a user complaint. I'm surprised more SSGs don't do this. It was only a few hundred lines of HTML analysis to implement, and it means every Mythic user gets accessibility checking for free, every build, without installing anything extra.
+These show up as warnings in the build output, so you catch problems early instead of finding out from a Lighthouse audit or a user complaint. I'm surprised more SSGs don't do this. It's only a few hundred lines of HTML analysis, and it means every project gets accessibility checking on every build with nothing extra to install.
 
 ### Content Linting
 
@@ -77,9 +77,7 @@ Configurable quality rules run during the build: minimum/maximum word count, req
 
 ### Schema.org and SEO
 
-Mythic generates JSON-LD structured data from your frontmatter. A blog post with a title, author, date, and description automatically gets a `BlogPosting` schema. A documentation page gets `Article`. The index page gets `WebPage`. Breadcrumbs get `BreadcrumbList`. It also generates sitemaps, robots.txt, and Atom/RSS/JSON feeds.
-
-Most people don't bother with this stuff because it's tedious to maintain by hand.
+Mythic generates JSON-LD structured data from your frontmatter. Blog posts get `BlogPosting`, docs get `Article`, the index gets `WebPage`, and breadcrumbs get `BreadcrumbList`. Sitemaps, robots.txt, and Atom/RSS/JSON feeds are generated too. Most people don't bother maintaining this by hand, so getting it for free is a nice win.
 
 ### Smart Diffing
 
@@ -117,7 +115,7 @@ fn on_page_discovered(page) {
 }
 ```
 
-Rhai is a safe, sandboxed scripting language designed for embedding in Rust. It can't crash the build or access the filesystem, and it runs fast enough that the overhead is negligible.
+[Rhai](https://rhai.rs) is a sandboxed scripting language for embedding in Rust. Scripts can't crash the build or access the filesystem, and they run fast enough that the overhead doesn't matter.
 
 ## Migration
 
@@ -139,13 +137,13 @@ The dev server (`mythic serve`) is built on axum with WebSocket-based live reloa
 2. An incremental rebuild runs (only changed pages are re-rendered and re-written).
 3. A WebSocket message tells the browser to reload.
 
-For CSS changes, it does hot injection. The stylesheet is swapped without a full page refresh. You see the change instantly, with no flash of unstyled content. Config and template changes are also detected automatically. When you edit `mythic.toml`, Mythic re-reads the config and triggers a full rebuild with the updated values, so no server restart is needed.
+CSS changes hot-inject: the stylesheet swaps in without a full page refresh, so you see the change with no flash of unstyled content. Config and template changes trigger a full rebuild automatically, so editing `mythic.toml` doesn't require restarting the server.
 
 ## Other Interesting Takeaways
 
 Content hashing turned out to be a better caching strategy than dependency tracking. I tried dependency tracking first, rebuilding a page if its template or data files changed. The bookkeeping was complex and fragile. Content hashing is simpler: hash the inputs, compare to the cached hash, and skip if equal. A combined hash of the config and templates handles the "everything changed" case. There's no bookkeeping to drift out of sync, and the hash comparison is essentially free compared to I/O.
 
-Supporting multiple template engines was also easier than expected. Dispatching on file extension (`.html`/`.tera` -> Tera, `.jinja`/`.j2` -> MiniJinja, `.hbs` -> Handlebars) took maybe 50 lines of code per engine. They share the same template context and filter functions. There's no deep architectural reason other SSGs are single-engine. It's just convention.
+Supporting multiple template engines was also easier than expected. Dispatching on file extension (`.html`/`.tera` -> Tera, `.jinja`/`.j2` -> MiniJinja, `.hbs` -> Handlebars) took maybe 50 lines per engine, and they share the same template context and filter functions. Other SSGs are single-engine mostly by convention.
 
 ## Getting Started
 
@@ -164,4 +162,4 @@ mythic serve
 
 Mythic is a 6-crate Rust workspace. The [source](https://github.com/joshburgess/mythic) and [documentation](https://github.com/joshburgess/mythic/tree/main/docs) cover everything from getting started to plugin development to migration from other SSGs. A GitHub Action for deployment is included and works with GitHub Pages, Netlify, Vercel, and Cloudflare Pages.
 
-This blog is built with Mythic. If you're running a large static site and incremental build times matter to you, if you want accessibility auditing and content linting without bolting on extra tools, or if you just like Rust and want an SSG written in it, give it a try.
+This blog is built with Mythic. If incremental build times matter on a large site, or you want accessibility and content linting without bolting on extra tools, it's worth a try.
